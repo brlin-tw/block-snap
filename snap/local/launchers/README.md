@@ -5,6 +5,6 @@ In convention launchers are named _something_-launch, for dealing certain proble
 
 ```yaml
 apps:
-  _app_name_:
+  block:
     command: foo-launch bar-launch _app_command_
 ```

@@ -1,6 +1,6 @@
 %YAML 1.1
 ---
-# Snapcraft Recipe for [Project]
+# Snapcraft Recipe for BLOCK
 # ------------------------------
 # This file is in the YAML data serialization format:
 # http://yaml.org
@@ -17,30 +17,30 @@
 # All following comments, including this one, are designed to be stripped
 # before contributing the recipe to the upstream
 
-# [Project], my-awesome-app, my-awesome-app-launch
+# BLOCK, block, block-launch
 # are placeholders text meant to be replaced by appropriate content
-name: my-awesome-app
-title: My Awesome App.
-summary: Single-line elevator pitch for your amazing snap under 79 chars.
+name: block
+title: BLOCK
+summary: Satisfying!  The new block breaking experience.
 description: |
-  This is my-awesome-app's description. You have a paragraph or two to tell
-  the most important story about your snap. Keep it under 100 words though,
-  we live in tweetspace and your description wants to look good in the snap
-  store.
+  This is the unofficial snap of the BLOCK game made by KENTA(22), due to licensing restrictions the actual software is downloaded from the last official site's Wayback Machine backup during runtime instead of bundling it in the snap.
 
-  This is the demonstration app of the Snapcrafters Template Plus:
-  https://github.com/Lin-Buo-Ren/snapcrafters-template-plus
+  NOTE: This is NOT an official distribution of BLOCK,
+  please refer to the snap's own issue tracker for support:
+
+  Issues · brlin-tw/block-snap
+  https://github.com/brlin-tw/block-snap/issues
 
 # The path of icon to represent the snap, relative to the source tree directory
 # Only PNG or SVG image is supported, dimension must be greater than 256x256px
-icon: snap/gui/my-awesome-app.png
+icon: snap/gui/block.256px.png
 
 # The license of this application, in SPDX format
 # NOTE: Currently only supports SPDX 2.1 license expressions, as described in Appendix IV of
 # https://spdx.org/spdx-specification-21-web-version
 # Supported expressions:
 # https://github.com/snapcore/snapd/blob/HEAD/spdx/licenses.go
-#license:
+license: Proprietary
 
 # Version string just for humans, typically '1.2+git' or '1.3.2'
 # The wrapping single quotes are often required to avoid the version string
@@ -169,7 +169,7 @@ parts:
 
     plugin: dump
     organize:
-      my-awesome-app: bin/
+      block: bin/
     stage:
       - bin/*
 
@@ -182,27 +182,27 @@ parts:
       "${SNAPCRAFT_STAGE}"/patching/patch-desktop-entries.bash
 
 # Apps that are exposed by the snap package
-# If the _app_name_ is identical with the _snap_name_ it can be directly run
-# with `_snap_name_` or `snap run _snap_name_` commands, otherwise it can only be run
-# via `_snap_name_._app_name_` or `snap run _snap_name_._app_name_`
+# If the block is identical with the block it can be directly run
+# with `block` or `snap run block` commands, otherwise it can only be run
+# via `block.block` or `snap run block.block`
 apps:
-  my-awesome-app:
+  block:
     # The adapter to set up runtime environment at the launch of the snap
     # NOTE: The `command-chain` property is only supported by the `full` adapter
     adapter: full
 
     # An *relative path* to an executable file root from the `prime` directory to be executed, and its command-line arguments
     # NOTE: The right angle bracket at the beginning of the value of the `command` keyword starts a YAML folded style block scalar, refer the following spec document for more info: http://yaml.org/spec/1.2/spec.html#id2796251
-    command: bin/my-awesome-app
+    command: bin/block
 
     # The commands that are run, in order, before running the one specified by the `command` key
     command-chain:
       - bin/desktop-launch
-      - bin/my-awesome-app-launch
+      - bin/block-launch
 
     # If the providing part of the app. has a desktop entry, specify its path relative to the `prime` directory.
     # If the packaging target doesn't provide a desktop entry, ignore the `desktop` key and implement a desktop entry in `/snap/gui`
-    #desktop: share/applications/my-awesome-app.desktop
+    #desktop: share/applications/block.desktop
 
 # Refer the following documentation for asserting interface plugs and slots in a security confined snap:
 # Interface management - doc - snapcraft.io
@@ -252,11 +252,11 @@ plugs:
   #user-wide-configs:
     #interface: personal-files
     #read:
-      #- $HOME/.config/my-awesome-app
+      #- $HOME/.config/block
   #system-wide-configs:
     #interface: system-files
     #read:
-      #- /etc/my-awesome-app
+      #- /etc/block
 
   # Network access
   #network:

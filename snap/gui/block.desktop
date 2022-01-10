@@ -4,8 +4,9 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=My Awesome App.
-Comment=The demonstration application of Snapcrafters Template Plus
-Exec=my-awesome-app
-Icon=${SNAP}/meta/gui/my-awesome-app.png
+Name=BLOCK
+Comment=Satisfying!  The new block breaking experience.
+Comment[ja_JP]=爽快！新感覚ブロック崩し
+Exec=block
+Icon=${SNAP}/meta/gui/block.256px.png
 Categories=Development
