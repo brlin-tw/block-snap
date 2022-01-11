@@ -11,5 +11,55 @@ set \
 
 #export IMPORTANT_ENVIRONMENT_VARIABLE=value
 
+cd "${SNAP_USER_COMMON}"
+
+if ! test -e "${SNAP_USER_COMMON}"/block130/block130.exe; then
+    printf -- \
+        'Info: Application executable not found, downloading from last known backup...\n'
+    if \
+        test "$(
+            curl \
+                --location \
+                --remote-name \
+                --remote-header-name \
+                --write-out '%{http_code}' \
+                --silent \
+                --show-error \
+                https://web.archive.org/web/20130502083134if_/http://www.interq.or.jp/tohoku/kenta/download/block/block130.lzh
+        )" != 200; then
+        printf -- \
+            'Error: Program download failed.\n' \
+            1>&2
+        exit 1
+    fi
+    lha x block130.lzh
+fi
+
+if ! test -e "${SNAP_USER_COMMON}"/block130/wave/ball.wav; then
+    printf -- \
+        'Info: Sound effects not found, downloading from last known backup...\n'
+    if \
+        test "$(
+            curl \
+                --location \
+                --remote-name \
+                --remote-header-name \
+                --write-out '%{http_code}' \
+                --silent \
+                --show-error \
+                https://web.archive.org/web/20031119225826if_/http://www.kusoge.net/download/block/block_wave.zip
+        )" != 200; then
+        printf -- \
+            'Error: Program download failed.\n' \
+            1>&2
+        exit 1
+    fi
+    pushd block130/wave >/dev/null
+    unzip \
+        -o \
+        "${SNAP_USER_COMMON}/block_wave.zip"
+    popd >/dev/null
+fi
+
 # Finally run the next part of the command chain
 exec "${@}"

@@ -48,10 +48,8 @@ license: Proprietary
 # http://yaml.org/type
 # https://arp242.net/weblog/yaml_probably_not_so_great_after_all.html#surprising-behaviour
 # NOTE: This key is mutual exclusive with the `adopt-info` key
-#version: Derived from the part specified by the `adopt-info` property
+#version: '1.30'
 
-# Extract metadata from the main snap part
-# https://forum.snapcraft.io/t/extracting-information-from-sources-in-snapcraft-parts/4642
 adopt-info: main
 
 # Snapd feature set and version the snap requires in order to work
@@ -63,6 +61,11 @@ assumes:
 # The common runtime for the snap to run on, or `bare` for static linked applications
 # https://docs.snapcraft.io/snapcraft-top-level-metadata/8334#heading--base
 base: core18
+
+# Wine snaps only buildable on these platforms
+architectures:
+  - build-on: amd64
+  - build-on: i386
 
 # Security confinement
 # Use `devmode` to getting started
@@ -82,15 +85,6 @@ grade: stable
 # For `override-*` scriptlets used to modify behavior of certain part's lifecycle phase, check out:
 # https://docs.snapcraft.io/scriptlets/4892
 parts:
-  # Files to patch the files in the snap
-  patching:
-    source: snap/local/patching
-    plugin: dump
-    organize:
-      '*': patching/
-    prime:
-      - -*
-
   # Launcher programs to fix problems at runtime
   launchers:
     source: snap/local/launchers
@@ -100,109 +94,92 @@ parts:
     stage:
       - -bin/README.*
 
-  # Programs to modify the behavior of each step of the snapcraft lifecycles
-  scriptlets:
-    source: snap/local/scriptlets
-    plugin: dump
-    organize:
-      '*': scriptlets/
-    prime:
-      - -*
-
-  # Stage snap for fixing the Glibc locales
-  # https://forum.snapcraft.io/t/the-locales-launch-stage-snap/10296
-  locales-launch:
-    source: https://github.com/Lin-Buo-Ren/locales-launch.git
-    source-tag: v1.0.0
-    plugin: dump
-    stage-packages:
-      - libc-bin
-      - locales
-    stage:
-      - bin/locales-launch
-      - etc/locale.alias
-      - usr/bin/localedef
-      - usr/share/doc/locales
-      - usr/share/i18n
-      - usr/share/locale
-
-  # Remote part for support of various desktop technologies
-  # Refer: https://github.com/ubuntu/snapcraft-desktop-helpers/blob/master/snapcraft.yaml
-  desktop-gnome-platform:
-    source: https://github.com/ubuntu/snapcraft-desktop-helpers.git
-    source-depth: 1
-    source-subdir: gtk
-
-    plugin: make
-    build-packages:
-      - gcc
-    override-build: |
-      snapcraftctl build
-      mkdir -pv $SNAPCRAFT_PART_INSTALL/gnome-platform
-
-  # Integrate custom dialogs in your snap - doc - snapcraft.io
-  # https://forum.snapcraft.io/t/integrate-custom-dialogs-in-your-snap/10825
-  zenity-integration:
+  launchers-runtime-deps:
     plugin: nil
-    stage-snaps:
-      - zenity-integration
+    stage-packages:
+      # For fetching application assets
+      - curl
+
+      # For unpacking main program
+      - lhasa
+
+      # For unpacking sound effects
+      - unzip
+    override-stage: |
+      ln \
+        -s \
+        lhasa \
+        "${SNAPCRAFT_PART_INSTALL}/usr/bin/lha"
+
+      snapcraftctl stage
+
+  sommelier:
+    plugin: make
+    source: https://github.com/snapcrafters/sommelier-core.git
+    source-branch: '1.0'
 
   main:
-    after:
-      # for patch-desktop-entries.*
-      - patching
-
-      # for override-pull script
-      - scriptlets
-
-    source: .
-    #source-type:
-    #source-branch:
-    #source-tag:
-    #source-depth:
+    plugin: nil
+    build-packages:
+      - git
     override-pull: |
-      set -o nounset
+      recipe_commit="$(
+        git \
+          -C "${SNAPCRAFT_PROJECT_DIR}" \
+          describe \
+            --abbrev=7 \
+            --always \
+            --dirty \
+            --tags
+      )"
 
-      snapcraftctl pull
-
-      "${SNAPCRAFT_STAGE}"/scriptlets/main-adopt-info
-
-    plugin: dump
-    organize:
-      block: bin/
-    stage:
-      - bin/*
-
-    override-prime: |
-      set \
-        -o nounset
-
-      snapcraftctl prime
-
-      "${SNAPCRAFT_STAGE}"/patching/patch-desktop-entries.bash
+      snapcraftctl set-version \
+        "1.30+pkg${recipe_commit}"
 
 # Apps that are exposed by the snap package
-# If the block is identical with the block it can be directly run
-# with `block` or `snap run block` commands, otherwise it can only be run
-# via `block.block` or `snap run block.block`
+# If the _app_name_ is identical with the _snap_name_ it can be directly run
+# with `_snap_name_` or `snap run _snap_name_` commands, otherwise it can only be run
+# via `_snap_name_._app_name_` or `snap run _snap_name_._app_name_`
 apps:
   block:
+    extensions: [gnome-3-28]
     # The adapter to set up runtime environment at the launch of the snap
     # NOTE: The `command-chain` property is only supported by the `full` adapter
     adapter: full
 
     # An *relative path* to an executable file root from the `prime` directory to be executed, and its command-line arguments
     # NOTE: The right angle bracket at the beginning of the value of the `command` keyword starts a YAML folded style block scalar, refer the following spec document for more info: http://yaml.org/spec/1.2/spec.html#id2796251
-    command: bin/block
+    command: bin/sommelier run-exe
 
     # The commands that are run, in order, before running the one specified by the `command` key
     command-chain:
-      - bin/desktop-launch
       - bin/block-launch
 
-    # If the providing part of the app. has a desktop entry, specify its path relative to the `prime` directory.
-    # If the packaging target doesn't provide a desktop entry, ignore the `desktop` key and implement a desktop entry in `/snap/gui`
-    #desktop: share/applications/block.desktop
+    environment:
+      RUN_EXE: "$SNAP_USER_COMMON/block130/block130.exe"
+
+      # Prevent pop-ups about Wine Mono and Wine Gecko
+      WINEDLLOVERRIDES: "$WINEDLLOVERRIDES;mscoree,mshtml="
+
+    plugs: # change these as required
+      # Target application plays a sound when loading is finish, etc.
+      - audio-playback
+
+      - network
+
+  wine:
+    extensions: [gnome-3-28]
+    command: bin/sommelier
+    plugs:
+      - home
+      - network
+
+  winetricks:
+    extensions: [gnome-3-28]
+    command: bin/sommelier winetricks
+    plugs:
+      - home
+      - network
 
 # Refer the following documentation for asserting interface plugs and slots in a security confined snap:
 # Interface management - doc - snapcraft.io
@@ -211,54 +188,16 @@ apps:
 # https://docs.snapcraft.io/supported-interfaces/7744
 # Non-A/C: Non-autoconnect interface
 plugs:
-  # Common desktop interfaces
-  # https://forum.snapcraft.io/t/the-desktop-interfaces/2042
-  desktop:
-  desktop-legacy:
-  unity7:
-  wayland:
-
-  # GNOME and Gtk runtime via content sharing
-  # https://forum.snapcraft.io/t/desktop-app-support-gtk/6834
-  gnome-3-28-1804:
-    interface: content
-    target: $SNAP/gnome-platform
-    default-provider: gnome-3-28-1804
-
-  # Gtk Common Themes support
-  # https://forum.snapcraft.io/t/how-to-use-the-system-gtk-theme-via-the-gtk-common-themes-snap/6235
-  gsettings:
-  gtk-3-themes:
-    interface: content
-    target: $SNAP/data-dir/themes
-    default-provider: gtk-common-themes
-  icon-themes:
-    interface: content
-    target: $SNAP/data-dir/icons
-    default-provider: gtk-common-themes
-  sound-themes:
-    interface: content
-    target: $SNAP/data-dir/sounds
-    default-provider: gtk-common-themes
-
-  # Regular files access
-  #home:
-  #removable-media: # Non-A/C
-
-  # Application-specific files access
-  # The auto-connection requires store grant
-  # https://forum.snapcraft.io/t/the-personal-files-interface/9357
-  # https://forum.snapcraft.io/t/the-system-files-interface/9358
-  #user-wide-configs:
-    #interface: personal-files
-    #read:
-      #- $HOME/.config/block
-  #system-wide-configs:
-    #interface: system-files
-    #read:
-      #- /etc/block
-
   # Network access
   #network:
 
-#slots:
+  # This contains all the dependencies Wine needs
+  wine-runtime:
+    interface: content
+    target: $SNAP/wine-runtime
+    default-provider: wine-platform-runtime
+  # This contains the Wine binaries themselves
+  wine-6-stable:
+    interface: content
+    target: $SNAP/wine-platform
+    default-provider: wine-platform-6-stable
