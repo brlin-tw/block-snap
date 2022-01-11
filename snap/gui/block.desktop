@@ -9,4 +9,4 @@ Comment=Satisfying!  The new block breaking experience.
 Comment[ja_JP]=爽快！新感覚ブロック崩し
 Exec=block
 Icon=${SNAP}/meta/gui/block.256px.png
-Categories=Development
+Categories=Game
