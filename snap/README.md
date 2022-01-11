@@ -7,9 +7,7 @@
 
 **This is the unofficial snap for BLOCK**, *"Satisfying!  The new block breaking experience."*. It works on Ubuntu, Fedora, Debian, and other major Linux distributions.
 
-<!-- Uncomment and modify this when you are provided a snap status badge
-[![Status Badge of the `block` Snap](https://snapcraft.io/block/badge.svg)](https://snapcraft.io/block)
--->
+[![block](https://snapcraft.io/block/badge.svg)](https://snapcraft.io/block)
 
 ![Screenshot of the Snapped Application](local/screenshots/main-view.png "Screenshot of the Snapped Application")
 
