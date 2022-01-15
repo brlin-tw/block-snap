@@ -8,6 +8,17 @@ For third-party packaging where the packaging recipe is separated from the packa
 
 NOTE: The Snap Store requires that the snap's representing icon be a image of SVG or PNG with at least 256x256px in size.  If the upstream provided logo is not scalable or large enough a modified copy that satisfies the requirement must be made and placed here.
 
+### Instructions for generating the desired snap icon
+
+```commands
+curl \
+	--location \
+	--remote-name \
+	--remote-header-name \
+	https://web.archive.org/web/20030916024125if_/http://www.kusoge.net:80/block.gif
+convert block.gif -scale 256x256 block.256px.png
+```
+
 ## Desktop Entries for Applications Provided by the Snap
 If the packaging target is a graphical user interface application but it doesn't implement a freedesktop.org desktop entry, you may implement one here with the `.desktop` filename extension(The filename isn't significant, but it's `Exec` key must be a valid snap launch command(e.g. `block.block` or `block` when `block` is identical to the `block`) and it's `Icon` key must set to `$SNAP/some/icon/under/the/prime/directory.{png,svg}` in order to make the menu entry's icon work).
 
