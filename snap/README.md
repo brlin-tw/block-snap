@@ -3,13 +3,13 @@
 	Use the Staticaly service for easy access to in-repo pictures:
 	https://www.staticaly.com/
 -->
-![Icon of BLOCK](gui/block.256px.png "Icon of BLOCK")
+![Icon of BLOCK](https://cdn.statically.io/gh/brlin-tw/block-snap/88a2b143/snap/gui/block.256px.png "Icon of BLOCK")
 
 **This is the unofficial snap for BLOCK**, *"Satisfying!  The new block breaking experience."*. It works on Ubuntu, Fedora, Debian, and other major Linux distributions.
 
 [![block](https://snapcraft.io/block/badge.svg)](https://snapcraft.io/block)
 
-![Screenshot of the Snapped Application](local/screenshots/main-view.png "Screenshot of the Snapped Application")
+![Screenshot of the Snapped Application](https://cdn.statically.io/gh/brlin-tw/block-snap/88a2b143/snap/local/screenshots/main-view.png "Screenshot of the Snapped Application")
 
 Published for <img src="http://anything.codes/slack-emoji-for-techies/emoji/tux.png" align="top" width="24" /> with 💝 by Snapcrafters
 
