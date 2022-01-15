@@ -36,10 +36,8 @@ Published for <img src="http://anything.codes/slack-emoji-for-techies/emoji/tux.
 Check out the [issue tracker](https://github.com/brlin-tw/block-snap/issues) for known issues.
 -->
 
-<!-- Uncomment when you have initialized the URLs
 ## Support
 * Report issues regarding using this snap to the issue tracker:  
   <https://github.com/brlin-tw/block-snap/issues>
 * You may also post on the Snapcraft Forum, under the `snap` topic category:  
   <https://forum.snapcraft.io/c/snap>
--->
